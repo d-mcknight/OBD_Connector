@@ -1,17 +1,18 @@
 from can.interface import Bus
 from can.message import Message
 from can.notifier import Notifier
-from cantools.db import decode_message
+from cantools.database import load_file
 
 
 class CANConnector:
-    def __init__(self):
+    def __init__(self, db_file: str):
         self.bus = Bus()
         self.notifier = Notifier(self.bus, (self.on_message,))
-        # TODO: cantools to decode messages
+        # TODO: `.dbc` resources are needed to decode CAN messages into usable data
+        self.db = load_file(db_file)
 
     def on_message(self, message: Message):
-        data = decode_message(message.arbitration_id, message.data)
+        data = self.db.decode_message(message.arbitration_id, message.data)
         print(data)
 
     def stop(self):
