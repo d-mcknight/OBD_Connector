@@ -27,43 +27,82 @@ class OBDConnector(Thread):
         self.register_events()
 
     @property
-    def metrics(self):
-        return copy(self._metrics)
+    def metrics(self) -> List[dict]:
+        """
+        Get all measured metrics as a time series. Note that the `time` attached
+        to each list element will differ slightly from the actual time the
+        metrics were collected.
+        """
+        metrics = copy(self._metrics)
+        squashed_metrics = list()
+        for command, values in metrics.items():
+            for idx, val in enumerate(values):
+                squashed_metrics[idx].setdefault({'time': val.time})
+                squashed_metrics[idx][command] = \
+                    val.value.magnitude if val.value else None
+        return squashed_metrics
 
     @property
     def engine_load(self) -> float:
+        """
+        Get the engine load as a float (0.0-1.0)
+        """
         load = self._metrics["ENGINE_LOAD"][-1].value
-        load_pct = load.magnitude/100 if load else 0.0
-        return load_pct
+        return load.magnitude/100 if load else 0.0
 
     @property
     def coolant_temp(self) -> float:
+        """
+        Get coolant temperature in degrees Celcius (defaults to -273.15)
+        """
         temp = self._metrics["COOLANT_TEMP"][-1].value
-        temp = temp.magnitude if temp else -273.13
-        return temp
+        return temp.magnitude if temp else -273.15
 
     @property
     def engine_rpm(self) -> float:
-        return self._metrics["RPM"][-1].value
+        """
+        Get engine RPM as a float
+        """
+        rpm = self._metrics["RPM"][-1].value
+        return rpm.magnitude if rpm else 0.0
 
     @property
-    def vehicle_speed_kph(self) -> float:
-        return self._metrics["SPEED"][-1].value
+    def vehicle_speed(self) -> float:
+        """
+        Get vehicle speed in km/h
+        """
+        speed = self._metrics["SPEED"][-1].value
+        return speed.magnitude if speed else 0.0
 
     @property
     def fuel_level(self) -> float:
-        return self._metrics["FUEL_LEVEL"][-1].value
+        """
+        Get the current fuel level as a float (0.0-1.0)
+        """
+        fuel = self._metrics["FUEL_LEVEL"][-1].value
+        return fuel.magnitude/100 if fuel else 0.0
 
     @property
-    def oil_temp(self):
-        return self._metrics["OIL_TEMP"][-1].value
+    def oil_temp(self) -> float:
+        """
+        Get engine oil temperature in degrees Celcius (defaults to -273.15)
+        """
+        temp = self._metrics["OIL_TEMP"][-1].value
+        return temp.magnitude if temp else -273.15
 
     @property
-    def fuel_rate(self):
-        return self._metrics["FUEL_RATE"][-1].value
+    def fuel_rate(self) -> float:
+        """
+        Get the instantaneous rate of fuel consumption in L/hr
+        """
+        consumption = self._metrics["FUEL_RATE"][-1].value
+        return consumption.magnitude if consumption else 0.0
 
     @property
-    def diagnostic_trouble_codes(self):
+    def diagnostic_trouble_codes(self) -> List[str]:
+        """
+        Get a list of active Diagnostic Trouble Codes
+        """
         return self._metrics["GET_CURRENT_DTC"][-1].value
 
     def register_events(self):
