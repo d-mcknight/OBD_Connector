@@ -14,16 +14,16 @@ def get_requirements(requirements_filename: str):
     return requirements
 
 
-# with open(path.join(BASE_PATH, "README.md"), "r") as f:
-#     long_description = f.read()
+with open(path.join(BASE_PATH, "README.md"), "r") as f:
+    long_description = f.read()
 #
-# with open(path.join(BASE_PATH, "version.py"), "r", encoding="utf-8") as v:
-#     for line in v.readlines():
-#         if line.startswith("__version__"):
-#             if '"' in line:
-#                 version = line.split('"')[1]
-#             else:
-#                 version = line.split("'")[1]
+with open(path.join(BASE_PATH, "version.py"), "r", encoding="utf-8") as v:
+    for line in v.readlines():
+        if line.startswith("__version__"):
+            if '"' in line:
+                version = line.split('"')[1]
+            else:
+                version = line.split("'")[1]
 
 setuptools.setup(
     name="obd-connector",
