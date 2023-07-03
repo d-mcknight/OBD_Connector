@@ -15,7 +15,6 @@ class OBDConnector(Thread):
             "RPM",
             "SPEED",
             "FUEL_LEVEL",
-            "AMBIENT_AIR_TEMP",
             "OIL_TEMP",
             "FUEL_RATE",
             "GET_CURRENT_DTC"
@@ -47,10 +46,6 @@ class OBDConnector(Thread):
         return self._metrics["FUEL_LEVEL"].value
 
     @property
-    def ambient_temp(self):
-        return self._metrics["AMBIENT_AIR_TEMP"]
-
-    @property
     def oil_temp(self):
         return self._metrics["OIL_TEMP"].value
 
@@ -70,7 +65,7 @@ class OBDConnector(Thread):
             self._metrics[command] = OBDResponse()
 
     def run(self):
-        while self._stopping.wait(self._loop_wait):
+        while not self._stopping.wait(self._loop_wait):
             if not self.obd.is_connected():
                 raise RuntimeError("OBD Connection unexpectedly closed")
             for cmd in self._commands:
