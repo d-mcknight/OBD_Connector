@@ -1,11 +1,11 @@
 from time import sleep
 from pprint import pprint
-from obd_connector.connection import OBDConnection
+from obd_connector.obd_connector import OBDConnector
 
 
 class Monitor:
     def __init__(self):
-        self.connector = OBDConnection()
+        self.connector = OBDConnector()
         self.connector.start()
 
     def log_stats(self):

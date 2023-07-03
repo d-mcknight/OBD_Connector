@@ -3,7 +3,7 @@ from typing import Dict, List
 from obd import OBD, OBDResponse, OBDCommand, commands
 
 
-class OBDConnection(Thread):
+class OBDConnector(Thread):
     def __init__(self):
         Thread.__init__(self)
         self.obd = OBD()
