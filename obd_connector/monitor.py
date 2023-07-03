@@ -1,6 +1,6 @@
 from time import sleep
 from pprint import pprint
-from obd_connector.obd_connector import OBDConnector
+from obd_connector import OBDConnector
 
 
 class Monitor:

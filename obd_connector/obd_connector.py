@@ -31,23 +31,27 @@ class OBDConnector(Thread):
         return copy(self._metrics)
 
     @property
-    def engine_load(self):
-        return self._metrics["ENGINE_LOAD"][-1].value
+    def engine_load(self) -> float:
+        load = self._metrics["ENGINE_LOAD"][-1].value
+        load_pct = load.magnitude/100 if load else 0.0
+        return load_pct
 
     @property
-    def coolant_temp(self):
-        return self._metrics["COOLANT_TEMP"][-1].value
+    def coolant_temp(self) -> float:
+        temp = self._metrics["COOLANT_TEMP"][-1].value
+        temp = temp.magnitude if temp else -273.13
+        return temp
 
     @property
-    def engine_rpm(self):
+    def engine_rpm(self) -> float:
         return self._metrics["RPM"][-1].value
 
     @property
-    def vehicle_speed(self):
+    def vehicle_speed_kph(self) -> float:
         return self._metrics["SPEED"][-1].value
 
     @property
-    def fuel_level(self):
+    def fuel_level(self) -> float:
         return self._metrics["FUEL_LEVEL"][-1].value
 
     @property
