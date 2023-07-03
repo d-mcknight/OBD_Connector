@@ -8,6 +8,7 @@ class OBDConnection(Thread):
         Thread.__init__(self)
         self.obd = OBD()
         self._stopping = Event()
+        self._loop_wait = 0.2
         self._command_names = [
             "ENGINE_LOAD",
             "COOLANT_TEMP",
@@ -21,6 +22,9 @@ class OBDConnection(Thread):
         ]
         self._commands: List[OBDCommand] = list()
         self._metrics: Dict[str, OBDResponse] = dict()
+        if not self.obd.is_connected():
+            raise RuntimeError("No OBD Connection")
+        self.register_events()
 
     @property
     def engine_load(self):
@@ -66,7 +70,7 @@ class OBDConnection(Thread):
             self._metrics[command] = OBDResponse()
 
     def run(self):
-        while self._stopping.wait(0.1):
+        while self._stopping.wait(self._loop_wait):
             if not self.obd.is_connected():
                 raise RuntimeError("OBD Connection unexpectedly closed")
             for cmd in self._commands:
