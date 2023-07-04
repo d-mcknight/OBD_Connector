@@ -37,7 +37,9 @@ class OBDConnector(Thread):
         squashed_metrics = list()
         for command, values in metrics.items():
             for idx, val in enumerate(values):
-                squashed_metrics[idx].setdefault({'time': val.time})
+                while len(squashed_metrics) < idx + 1:
+                    squashed_metrics.append(dict())
+                squashed_metrics[idx].setdefault('time', val.time)
                 squashed_metrics[idx][command] = \
                     val.value.magnitude if val.value else None
         return squashed_metrics
@@ -96,7 +98,7 @@ class OBDConnector(Thread):
         Get the instantaneous rate of fuel consumption in L/hr
         """
         consumption = self._metrics["FUEL_RATE"][-1].value
-        return consumption.magnitude if consumption else 0.0
+        return consumption.magnitude if consumption else -1.0
 
     @property
     def diagnostic_trouble_codes(self) -> List[str]:
